@@ -1,8 +1,35 @@
 const template = document.createElement("template");
 template.innerHTML = `
-<head>
-<link rel="stylesheet" href="index.css">
-</head>
+<style>
+.slider {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #808080;
+    border-radius: 50%;
+    transition-duration: 1s;
+    pointer-events: none;
+  }
+  
+  .container {
+    width: 40px;
+    height: 20px;
+    background-color: black;
+    border-radius: 30% / 50%;
+    position: relative;
+    pointer-events: none;
+  }
+  
+  .slide {
+    transform: translateX(100%);
+  }
+  
+  .container input {
+    opacity: 0;
+    position: absolute;
+    pointer-events: all;
+  }
+  </style>
             <div class="container">
             <input  type="checkbox"  id="something"/>
               <div
@@ -19,6 +46,12 @@ class ToggleButton extends HTMLElement {
   }
 
   connectedCallback() {
+    const attr = this.getAttribute("on");
+    const radiobutton = this.shadowRoot.querySelector(".slider");
+    if (attr) {
+      radiobutton.classList.add("slide");
+    }
+
     this.shadowRoot
       .querySelector("input")
       .addEventListener("click", () => this.toggleButton());
