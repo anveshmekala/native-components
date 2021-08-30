@@ -39,31 +39,37 @@ template.innerHTML = `
             </div>
 `;
 class ToggleButton extends HTMLElement {
+  static get observedAttributes() {
+    return ["on"];
+  }
   constructor() {
     super();
-    const shadowRoot = this.attachShadow({ mode: "open" });
-    shadowRoot.appendChild(template.content.cloneNode(true));
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 
   connectedCallback() {
-    const attr = this.getAttribute("on");
     const radiobutton = this.shadowRoot.querySelector(".slider");
-    if (attr) {
+    if (this.hasAttribute("on")) {
       radiobutton.classList.add("slide");
     }
-
     this.shadowRoot
       .querySelector("input")
       .addEventListener("click", () => this.toggleButton());
   }
 
+  disconnectedCallback() {
+    this.shadowRoot.querySelector("input").removeEventListener("click");
+  }
+
+  attributeChangedCallback() {
+    this.shadowRoot
+      .querySelector(".slider")
+      .classList.toggle("slide", this.hasAttribute("on"));
+  }
+
   toggleButton() {
-    const className = this.shadowRoot.querySelector(".slider").classList;
-    if (className.contains("slide")) {
-      this.shadowRoot.querySelector(".slider").classList.remove("slide");
-    } else {
-      this.shadowRoot.querySelector(".slider").classList.add("slide");
-    }
+    this.toggleAttribute("on");
   }
 }
 
