@@ -1,4 +1,10 @@
 const template = document.createElement("template");
+
+const CSS = {
+  slider: "slider",
+  sliderOn: "slider--on",
+};
+
 template.innerHTML = `
 <style>
 .slider {
@@ -20,7 +26,7 @@ template.innerHTML = `
     pointer-events: none;
   }
   
-  .slide {
+  .slider--on {
     transform: translateX(100%);
   }
   
@@ -42,30 +48,42 @@ class ToggleButton extends HTMLElement {
   static get observedAttributes() {
     return ["on"];
   }
+
+  get on() {
+    this.getAttribute("on");
+  }
+
+  set on(value) {
+    this.setAttribute("on", value);
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.inputElement = this.shadowRoot.querySelector("input");
   }
 
+  onClickListener = () => {
+    this.toggleButton();
+  };
+
   connectedCallback() {
-    const radiobutton = this.shadowRoot.querySelector(".slider");
+    const radiobutton = this.shadowRoot.querySelector(`.${CSS.slider}`);
     if (this.hasAttribute("on")) {
-      radiobutton.classList.add("slide");
+      radiobutton.classList.add(CSS.sliderOn);
     }
-    this.shadowRoot
-      .querySelector("input")
-      .addEventListener("click", () => this.toggleButton());
+    this.inputElement.addEventListener("click", this.onClickListener);
   }
 
   disconnectedCallback() {
-    this.shadowRoot.querySelector("input").removeEventListener("click");
+    this.inputElement.removeEventListener("click", this.onClickListener);
   }
 
   attributeChangedCallback() {
     this.shadowRoot
-      .querySelector(".slider")
-      .classList.toggle("slide", this.hasAttribute("on"));
+      .querySelector(`.${CSS.slider}`)
+      .classList.toggle(CSS.sliderOn, this.hasAttribute("on"));
   }
 
   toggleButton() {
@@ -74,4 +92,3 @@ class ToggleButton extends HTMLElement {
 }
 
 window.customElements.define("anveshmekala-toggle-button", ToggleButton);
-
